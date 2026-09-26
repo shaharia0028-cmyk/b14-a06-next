@@ -6,6 +6,7 @@ import { SortKey, Workout } from "@/lib/types";
 import Hero from "@/components/Hero";
 import WorkoutCard from "@/components/WorkoutCard";
 import SortDropdown from "@/components/SortDropdown";
+import SearchInput from "@/components/SearchInput";
 import Spinner from "@/components/Spinner";
 
 const sortComparators: Record<SortKey, (a: Workout, b: Workout) => number> = {
@@ -20,6 +21,7 @@ export default function HomePage() {
     "loading"
   );
   const [sortKey, setSortKey] = useState<SortKey>("duration");
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -40,10 +42,17 @@ export default function HomePage() {
     };
   }, []);
 
-  const sortedWorkouts = useMemo(
-    () => [...workouts].sort(sortComparators[sortKey]),
-    [workouts, sortKey]
-  );
+  const sortedWorkouts = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const filtered = q
+      ? workouts.filter(
+          (w) =>
+            w.name.toLowerCase().includes(q) ||
+            w.muscleGroups.some((tag) => tag.toLowerCase().includes(q))
+        )
+      : workouts;
+    return [...filtered].sort(sortComparators[sortKey]);
+  }, [workouts, sortKey, query]);
 
   return (
     <>
@@ -60,7 +69,10 @@ export default function HomePage() {
             </p>
           </div>
           {status === "ready" && (
-            <SortDropdown value={sortKey} onChange={setSortKey} />
+            <div className="flex flex-wrap items-center gap-3">
+              <SearchInput value={query} onChange={setQuery} />
+              <SortDropdown value={sortKey} onChange={setSortKey} />
+            </div>
           )}
         </div>
 
@@ -73,7 +85,13 @@ export default function HomePage() {
           </div>
         )}
 
-        {status === "ready" && (
+        {status === "ready" && sortedWorkouts.length === 0 && (
+          <div className="rounded-2xl border border-fl-border bg-fl-surface p-8 text-center text-sm text-fl-muted">
+            No workouts match &quot;{query}&quot;.
+          </div>
+        )}
+
+        {status === "ready" && sortedWorkouts.length > 0 && (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {sortedWorkouts.map((workout) => (
               <WorkoutCard key={workout.id} workout={workout} />

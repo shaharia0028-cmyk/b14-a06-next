@@ -6,6 +6,7 @@ import { SortKey, Workout } from "@/lib/types";
 import PlanWorkoutCard from "@/components/PlanWorkoutCard";
 import EmptyState from "@/components/EmptyState";
 import SortDropdown from "@/components/SortDropdown";
+import SearchInput from "@/components/SearchInput";
 import Spinner from "@/components/Spinner";
 
 const sortComparators: Record<SortKey, (a: Workout, b: Workout) => number> = {
@@ -26,6 +27,7 @@ export default function MyPlanPage() {
     markDone,
   } = usePlan();
   const [sortKey, setSortKey] = useState<SortKey>("duration");
+  const [query, setQuery] = useState("");
 
   const activeList = activeTab === "today" ? today : saved;
 
@@ -38,13 +40,21 @@ export default function MyPlanPage() {
     0
   );
 
-  const sortedList = useMemo(
-    () =>
-      [...activeList].sort((a, b) =>
-        sortComparators[sortKey](a.workout, b.workout)
-      ),
-    [activeList, sortKey]
-  );
+  const sortedList = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const filtered = q
+      ? activeList.filter(
+          (item) =>
+            item.workout.name.toLowerCase().includes(q) ||
+            item.workout.muscleGroups.some((tag) =>
+              tag.toLowerCase().includes(q)
+            )
+        )
+      : activeList;
+    return [...filtered].sort((a, b) =>
+      sortComparators[sortKey](a.workout, b.workout)
+    );
+  }, [activeList, sortKey, query]);
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
@@ -108,15 +118,24 @@ export default function MyPlanPage() {
           </button>
         </div>
 
-        {isHydrated && sortedList.length > 0 && (
-          <SortDropdown value={sortKey} onChange={setSortKey} />
+        {isHydrated && activeList.length > 0 && (
+          <div className="flex flex-wrap items-center gap-3">
+            <SearchInput value={query} onChange={setQuery} />
+            <SortDropdown value={sortKey} onChange={setSortKey} />
+          </div>
         )}
       </div>
 
       <div className="mt-6 space-y-4">
         {!isHydrated && <Spinner label="Loading workouts…" />}
 
-        {isHydrated && sortedList.length === 0 && <EmptyState />}
+        {isHydrated && activeList.length === 0 && <EmptyState />}
+
+        {isHydrated && activeList.length > 0 && sortedList.length === 0 && (
+          <div className="rounded-2xl border border-fl-border bg-fl-surface p-8 text-center text-sm text-fl-muted">
+            No workouts match &quot;{query}&quot;.
+          </div>
+        )}
 
         {isHydrated &&
           sortedList.map((item) => (
