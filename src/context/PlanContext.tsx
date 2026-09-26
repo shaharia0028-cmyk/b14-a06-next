@@ -61,18 +61,16 @@ export function PlanProvider({ children }: { children: ReactNode }) {
   const [activeTab, setActiveTab] = useState<"today" | "saved">("today");
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load persisted plan/saved data once on mount (client only). This runs
-  // after the server-rendered markup hydrates, so the initial render always
-  // matches the server and localStorage is only ever touched on the client.
+  
   useEffect(() => {
     const stored = readStoredState();
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing from an external system (localStorage) on mount, not derived from props/state
+    
     setToday(stored.today);
     setSaved(stored.saved);
     setIsHydrated(true);
   }, []);
 
-  // Persist whenever plan/saved change, after the initial hydration.
+  
   useEffect(() => {
     if (!isHydrated) return;
     try {
@@ -81,7 +79,7 @@ export function PlanProvider({ children }: { children: ReactNode }) {
         JSON.stringify({ today, saved })
       );
     } catch {
-      // Storage can fail (private mode, quota). Non-fatal for the app.
+      
     }
   }, [today, saved, isHydrated]);
 
