@@ -25,6 +25,7 @@ FitLog is a dark, no-nonsense gym companion built with Next.js. Browse a library
 7. **Persistent state** — Today's Plan and Saved lists are saved to `localStorage`, so your plan survives a page refresh.
 8. **Custom loading & 404 states** — A styled loading spinner while data fetches, and a branded 404 page for unknown routes.
 9. **Plan cap enforcement** — Today's Plan is capped at five lifts; the "Add to today's plan" button disables once the cap is hit.
+10. **Graceful error handling** — A global error boundary (`error.tsx`) catches runtime errors and offers a retry, and keyboard users get visible focus states throughout the app.
 
 ## Getting Started
 
