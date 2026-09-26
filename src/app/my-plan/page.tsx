@@ -27,13 +27,16 @@ export default function MyPlanPage() {
   } = usePlan();
   const [sortKey, setSortKey] = useState<SortKey>("duration");
 
-  const totalMinutes = today.reduce((sum, item) => sum + item.workout.duration, 0);
-  const totalCalories = today.reduce(
+  const activeList = activeTab === "today" ? today : saved;
+
+  const totalMinutes = activeList.reduce(
+    (sum, item) => sum + item.workout.duration,
+    0
+  );
+  const totalCalories = activeList.reduce(
     (sum, item) => sum + item.workout.caloriesBurned,
     0
   );
-
-  const activeList = activeTab === "today" ? today : saved;
 
   const sortedList = useMemo(
     () =>
@@ -58,7 +61,7 @@ export default function MyPlanPage() {
             Exercises
           </p>
           <p className="font-display text-2xl text-fl-accent sm:text-3xl">
-            {today.length}
+            {activeList.length}
           </p>
         </div>
         <div>
