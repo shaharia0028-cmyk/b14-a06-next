@@ -1,0 +1,44 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme inline {
+  --font-display: var(--font-oswald);
+  --font-sans: var(--font-inter);
+
+  --color-fl-bg: #0a0a0d;
+  --color-fl-surface: #14151d;
+  --color-fl-surface-2: #1b1d29;
+  --color-fl-border: #2a2c3a;
+  --color-fl-accent: #ccff00;
+  --color-fl-text: #f4f4f6;
+  --color-fl-muted: #9497a8;
+}
+
+body {
+  background: var(--color-fl-bg);
+  color: var(--color-fl-text);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), Impact, sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-fl-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-fl-border);
+  border-radius: 999px;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
